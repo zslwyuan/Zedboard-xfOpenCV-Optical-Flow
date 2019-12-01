@@ -11,6 +11,13 @@ This project is implemented based on SDSoC 2019.1.
 
 ***
 
+Contributors:
+
+Yikang ZHANG
+Tingyuan LIANG
+
+***
+
 Usage:
 
 1. cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof
