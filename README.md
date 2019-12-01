@@ -1,5 +1,7 @@
 # Zedboard-xfOpenCV-Optical-Flow
-xfOpenCV Optical Flow implemented on Zedboard with built aarch32 OpenCV libraries
+**xfOpenCV Optical Flow implemented on Zedboard with built aarch32 OpenCV libraries**
+
+***
 
 This project, provided by **Direct Drive Joint Inc.**, implements xfOpenCV Optical Flow on Zedboard. 
 
@@ -11,14 +13,15 @@ This project is implemented based on SDSoC 2019.1.
 
 ***
 
-Contributors:
+**Contributors:**
 
 Yikang ZHANG
+
 Tingyuan LIANG
 
 ***
 
-Usage:
+**Usage:**
 
 1. cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof
 2. source /tools/Xilinx/SDx/2019.1/settings64.sh
