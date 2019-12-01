@@ -13,17 +13,16 @@ This project is implemented based on SDSoC 2019.1.
 
 ***
 
-**Contributors:**
-
-Yikang ZHANG
-
-Tingyuan LIANG
-
-***
-
 **Usage:**
 
 1. cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof
 2. source /tools/Xilinx/SDx/2019.1/settings64.sh
 3. make all -j4
 4. Then you can use the built SDSoC design for your purpose.
+
+
+***
+
+**Note**
+
+Please remember to copy the libraries to you SD card for dynamic linking.
