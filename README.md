@@ -15,7 +15,7 @@ This project is implemented based on SDSoC 2019.1.
 
 **Usage:**
 
-1. cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof
+1. cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof\_videoinput **or** cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_photoinput
 2. source /tools/Xilinx/SDx/2019.1/settings64.sh
 3. make all -j4
 4. Then you can use the built SDSoC design for your purpose.
