@@ -51,10 +51,10 @@ const float powTwo15 = pow(2,15);
 /* color coding */
 
 // custom, hopefully, low cost colorizer.
-void getPseudoColorInt (IN_TYPE pix, float fx, float fy, rgba_t& rgba)
+void getPseudoColorInt (IN_TYPE pix, signed char fx, signed char fy, rgba_t& rgba)
 {
   // TODO get the normFac from the host as cmdline arg
-  const int normFac = 10;
+  const int normFac = 2;
 
   int y = 127 + (int) (fy * normFac);
   int x = 127 + (int) (fx * normFac);
@@ -98,7 +98,7 @@ void getPseudoColorInt (IN_TYPE pix, float fx, float fy, rgba_t& rgba)
 
 
 
-void pyrof_hw(cv::Mat im0, cv::Mat im1, cv::Mat flowUmat, cv::Mat flowVmat, xf::Mat<XF_32UC1,HEIGHT,WIDTH,XF_NPPC1> & flow, xf::Mat<XF_32UC1,HEIGHT,WIDTH,XF_NPPC1> & flow_iter, xf::Mat<XF_8UC1,HEIGHT,WIDTH,XF_NPPC1> mat_imagepyr1[NUM_LEVELS] , xf::Mat<XF_8UC1,HEIGHT,WIDTH,XF_NPPC1> mat_imagepyr2[NUM_LEVELS] , int pyr_h[NUM_LEVELS], int pyr_w[NUM_LEVELS])
+void pyrof_hw(cv::Mat im0, cv::Mat im1, signed char flowUmat[HEIGHT][WIDTH], signed char flowVmat[HEIGHT][WIDTH], xf::Mat<XF_32UC1,HEIGHT,WIDTH,XF_NPPC1> & flow, xf::Mat<XF_32UC1,HEIGHT,WIDTH,XF_NPPC1> & flow_iter, xf::Mat<XF_8UC1,HEIGHT,WIDTH,XF_NPPC1> mat_imagepyr1[NUM_LEVELS] , xf::Mat<XF_8UC1,HEIGHT,WIDTH,XF_NPPC1> mat_imagepyr2[NUM_LEVELS] , int pyr_h[NUM_LEVELS], int pyr_w[NUM_LEVELS])
 {	                                                                              
 	for(int l=0; l<NUM_LEVELS; l++)
 	{
@@ -213,11 +213,11 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, cv::Mat flowUmat, cv::Mat flowVmat, xf::
 				tempcopy = flow_iter.read(offset + j);
 				short splittemp1 = (tempcopy>>16);
 				short splittemp2 = (0x0000FFFF & tempcopy);
-				TYPE_FLOW_TYPE *uflow= (TYPE_FLOW_TYPE*) &splittemp1;
-				TYPE_FLOW_TYPE *vflow= (TYPE_FLOW_TYPE*) &splittemp2;
+				signed char *uflow= (signed char*) &splittemp1;
+				signed char *vflow= (signed char*) &splittemp2;
 				
-				flowUmat.at<float>(i,j) = (float) *uflow;
-				flowVmat.at<float>(i,j) = (float) *vflow;
+				flowUmat[i][j] = (signed char ) *uflow;
+				flowVmat[i][j] = (signed char ) *vflow;
 			}
 		}
 	}
@@ -232,11 +232,11 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, cv::Mat flowUmat, cv::Mat flowVmat, xf::
 				tempcopy = flow.read(offset + j);
 				short splittemp1 = (tempcopy>>16);
 				short splittemp2 = (0x0000FFFF & tempcopy);
-				TYPE_FLOW_TYPE *uflow= (TYPE_FLOW_TYPE*) &splittemp1;
-				TYPE_FLOW_TYPE *vflow= (TYPE_FLOW_TYPE*) &splittemp2;
+				signed char *uflow= (signed char*) &splittemp1;
+				signed char *vflow= (signed char*) &splittemp2;
 				
-				flowUmat.at<float>(i,j) = (float) *uflow;
-				flowVmat.at<float>(i,j) = (float) *vflow;
+				flowUmat[i][j] = (signed char ) *uflow;
+				flowVmat[i][j] = (signed char ) *vflow;
 			}
 		}
 	}
@@ -285,6 +285,21 @@ int main(int, char**)
 	flow.copyTo((XF_PTSNAME(XF_32UC1,XF_NPPC1)*)init_mat.data);
 	init_mat.release();
 	
+	signed char glx[HEIGHT][WIDTH]; 
+	signed char gly[HEIGHT][WIDTH];
+
+	// Auviz Hardware implementation
+	/***********************************************************************************/
+	//Setting image sizes for each pyramid level
+	int pyr_w[NUM_LEVELS], pyr_h[NUM_LEVELS];
+	pyr_h[0] = HEIGHT;
+	pyr_w[0] = WIDTH;
+	for(int lvls=1; lvls< NUM_LEVELS; lvls++)
+	{
+		pyr_w[lvls] = (pyr_w[lvls-1]+1)>>1;
+		pyr_h[lvls] = (pyr_h[lvls-1]+1)>>1;
+	}
+		
     while (true)
     {
         frame_cnt++;
@@ -312,20 +327,7 @@ int main(int, char**)
     		return -1;
     	}
 		
-		// Auviz Hardware implementation
-		cv::Mat glx (im0.size(), CV_32F, cv::Scalar::all(0)); // flow at each level is updated in this variable
-		cv::Mat gly (im0.size(), CV_32F, cv::Scalar::all(0));
-		/***********************************************************************************/
-		//Setting image sizes for each pyramid level
-		int pyr_w[NUM_LEVELS], pyr_h[NUM_LEVELS];
-		pyr_h[0] = im0.rows;
-		pyr_w[0] = im0.cols;
-		for(int lvls=1; lvls< NUM_LEVELS; lvls++)
-		{
-			pyr_w[lvls] = (pyr_w[lvls-1]+1)>>1;
-			pyr_h[lvls] = (pyr_h[lvls-1]+1)>>1;
-		}
-		
+
 		std::cout << "initilization done for frame#" << frame_cnt << "\n";
 
 		//call the hls optical flow implementation
@@ -342,7 +344,7 @@ int main(int, char**)
 			for(int cc=0;cc<im0.cols;cc++)
 			{
 				rgba_t colorcodedpx;
-				getPseudoColorInt(im0.at<unsigned char>(rc,cc),glx.at<float>(rc,cc),gly.at<float>(rc,cc),colorcodedpx);
+				getPseudoColorInt(im0.at<unsigned char>(rc,cc),glx[rc][cc],gly[rc][cc],colorcodedpx);
 				color_px = Vec3ucpt(colorcodedpx.b, colorcodedpx.g, colorcodedpx.r);
 				color_code_img.at<Vec3ucpt>(rc,cc) = color_px;
 			}
@@ -360,8 +362,6 @@ int main(int, char**)
 		//end color coding
 
 		//releaseing mats and pointers created inside the main for loop
-		glx.release();
-		gly.release();
 		im0.release();
 		im1.release();        
 		std::cout << "memory release done for frame#" << frame_cnt << "\n";
