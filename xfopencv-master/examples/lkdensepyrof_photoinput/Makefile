@@ -90,7 +90,7 @@ APPSOURCES := ${TB_SRC_PATH}/${FUNC_NAME}_tb.cpp ${TB_SRC_PATH}/${FUNC_NAME}_acc
 #-------------------------------------------------------------------------------
 # Library/Include paths
 #-------------------------------------------------------------------------------
-IDIRS = -I. -I../../../arm_opencv_249/includes -I../../../arm_other_libs/includes -I${PROJ_TOP_PATH}/include
+IDIRS = -I. -I../../../arm_opencv_249/include -I../../../arm_other_libs/include -I${PROJ_TOP_PATH}/include
 LDIRS =  -L../../../arm_opencv_249/lib -L../../../arm_other_libs/lib
 LLIBS ?= -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect  -lopencv_flann -llzma -ltiff -lpng16 -lz -ljpeg -ldl -lrt -lwebp  -lopencv_flann -lavcodec -lavformat -lavutil -lswscale -lx264
 
