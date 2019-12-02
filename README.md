@@ -26,3 +26,13 @@ This project is implemented based on SDSoC 2019.1.
 **Note**
 
 Please remember to copy the libraries to you SD card for dynamic linking.
+
+***
+
+**DEMO**
+**INPUT**
+![image](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/demo_photos/input.gif)
+
+**OUTPUT**
+![image](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/demo_photos/ouput.gif)
+
