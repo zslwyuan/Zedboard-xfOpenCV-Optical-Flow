@@ -30,7 +30,7 @@
 #include "xf_headers.h"
 #include "xf_pyr_dense_optical_flow_config.h"
 #include "opencv2/opencv.hpp"
-
+#include <cstring>
 
 /* Color Coding */
 // kernel returns this type. Packed strcuts on axi ned to be powers-of-2.
@@ -114,18 +114,36 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, cv::Mat flowUmat, cv::Mat flowVmat, xf::
 	// mat_imagepyr2[0].copyTo(im1.data);
 	
 	std::cout << "Copying data for pydown \n";
-	// memcpy(mat_imagepyr1[0].data, im0.data, sizeof(im0.data));
-	// memcpy(mat_imagepyr2[0].data, im1.data, sizeof(im1.data));
-	
 
+	unsigned int *m1 = (unsigned int *) mat_imagepyr1[0].data;
+	unsigned int *ptr_im0 = (unsigned int *) im0.data;
+	unsigned int *m2 = (unsigned int *) mat_imagepyr2[0].data;
+	unsigned int *ptr_im1 = (unsigned int *) im1.data;
+	int new_w = pyr_w[0] / 4;
+	
 	for(int i=0; i<pyr_h[0]; i++)
 	{
-		for(int j=0; j<pyr_w[0]; j++)
+		int offset = i*new_w;
+		for(int j=0; j<new_w; j++)
 		{
-			mat_imagepyr1[0].write(i*pyr_w[0] + j,im0.data[i*pyr_w[0] + j]);
-			mat_imagepyr2[0].write(i*pyr_w[0] + j,im1.data[i*pyr_w[0] + j]);
+			*(m1+offset + j) = *(ptr_im0+offset + j);
+			*(m2+offset + j) = *(ptr_im1+offset + j);
 		}	
 	}
+
+	// memcpy(mat_imagepyr1[0].data, im0.data, sizeof(im0.data));
+	// memcpy(mat_imagepyr2[0].data, im1.data, sizeof(im1.data));
+
+	// for(int i=0; i<pyr_h[0]; i++)
+	// {
+	// 	for(int j=0; j<pyr_w[0]; j++)
+	// 	{
+	// 		mat_imagepyr1[0].write(i*pyr_w[0] + j,im0.data[i*pyr_w[0] + j]);
+	// 		mat_imagepyr2[0].write(i*pyr_w[0] + j,im1.data[i*pyr_w[0] + j]);
+	// 	}	
+	// }
+
+
 	std::cout << "Copied data for pydown \n";
 	//creating image pyramid
 
@@ -183,32 +201,46 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, cv::Mat flowUmat, cv::Mat flowVmat, xf::
 	std::cout << "FPGA done\n";
 	
 //write output flow vectors to Mat after splitting the bits.
-	for (int i=0; i<pyr_h[0]; i++) {
-		for (int j=0; j< pyr_w[0]; j++) {
-			
-			
-			unsigned int tempcopy = 0;
-			if(flag_flowin)
+	if(flag_flowin)
+	{
+		
+		for(int i=0; i<pyr_h[0]; i++)
+		{
+			int offset = i*pyr_w[0];
+			for(int j=0; j<pyr_w[0]; j++)
 			{
-				//tempcopy = *(flow_iter.data + i*pyr_w[0] + j);
-				tempcopy = flow_iter.read(i*pyr_w[0] + j);
+				unsigned int tempcopy = 0;
+				tempcopy = flow_iter.read(offset + j);
+				short splittemp1 = (tempcopy>>16);
+				short splittemp2 = (0x0000FFFF & tempcopy);
+				TYPE_FLOW_TYPE *uflow= (TYPE_FLOW_TYPE*) &splittemp1;
+				TYPE_FLOW_TYPE *vflow= (TYPE_FLOW_TYPE*) &splittemp2;
+				
+				flowUmat.at<float>(i,j) = (float) *uflow;
+				flowVmat.at<float>(i,j) = (float) *vflow;
 			}
-			else
-			{
-				//tempcopy = *(flow.data + i*pyr_w[0] + j);
-				tempcopy = flow.read(i*pyr_w[0] + j);
-			}
-					
-			short splittemp1 = (tempcopy>>16);
-			short splittemp2 = (0x0000FFFF & tempcopy);
-			
-			TYPE_FLOW_TYPE *uflow= (TYPE_FLOW_TYPE*) &splittemp1;
-			TYPE_FLOW_TYPE *vflow= (TYPE_FLOW_TYPE*) &splittemp2;
-			
-			flowUmat.at<float>(i,j) = (float) *uflow;
-			flowVmat.at<float>(i,j) = (float) *vflow;
 		}
 	}
+	else
+	{
+		for(int i=0; i<pyr_h[0]; i++)
+		{
+			int offset = i*pyr_w[0];
+			for(int j=0; j<pyr_w[0]; j++)
+			{
+				unsigned int tempcopy = 0;
+				tempcopy = flow.read(offset + j);
+				short splittemp1 = (tempcopy>>16);
+				short splittemp2 = (0x0000FFFF & tempcopy);
+				TYPE_FLOW_TYPE *uflow= (TYPE_FLOW_TYPE*) &splittemp1;
+				TYPE_FLOW_TYPE *vflow= (TYPE_FLOW_TYPE*) &splittemp2;
+				
+				flowUmat.at<float>(i,j) = (float) *uflow;
+				flowVmat.at<float>(i,j) = (float) *vflow;
+			}
+		}
+	}
+
 	return;
 }
 
