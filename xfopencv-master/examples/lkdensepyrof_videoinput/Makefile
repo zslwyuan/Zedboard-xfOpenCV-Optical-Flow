@@ -69,8 +69,12 @@ FUNC_NAME_1    := xf_pyr_down
 FUNC_NAME_2    := xf_pyr_dense_optical_flow_wrapper
 FUNC_DIR       := lkdensepyrof_videoinput
 HW_TOP_NAME    := "xf::pyrDown <0,  480, 640, 1,${URAM_ENA}>"
-HW_TOP_NAME_1  := "xf::densePyrOpticalFlow<4, 50,5,8,5,0,480,640,1,${URAM_ENA}>"
+#                             <XF_8UC1,HEIGHT,WIDTH,XF_NPPC1,XF_USE_URAM>
+HW_TOP_NAME_1  := "xf::densePyrOpticalFlow<2, 20,3,8,5,0,480,640,1,${URAM_ENA}>"
+#                             <NUM_LEVELS, NUM_LINES_FINDIT, WINSIZE_OFLOW, TYPE_FLOW_WIDTH, TYPE_FLOW_INT, XF_8UC1, HEIGHT, WIDTH, XF_NPPC1, XF_USE_URAM>
 EXECUTABLE     := ipOF.elf
+
+
 
 #-------------------------------------------------------------------------------
 # Internal Path variables

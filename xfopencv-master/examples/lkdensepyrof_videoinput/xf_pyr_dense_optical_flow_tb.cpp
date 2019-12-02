@@ -113,6 +113,11 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, cv::Mat flowUmat, cv::Mat flowVmat, xf::
 	// mat_imagepyr1[0].copyTo(im0.data);
 	// mat_imagepyr2[0].copyTo(im1.data);
 	
+	std::cout << "Copying data for pydown \n";
+	// memcpy(mat_imagepyr1[0].data, im0.data, sizeof(im0.data));
+	// memcpy(mat_imagepyr2[0].data, im1.data, sizeof(im1.data));
+	
+
 	for(int i=0; i<pyr_h[0]; i++)
 	{
 		for(int j=0; j<pyr_w[0]; j++)
@@ -121,9 +126,10 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, cv::Mat flowUmat, cv::Mat flowVmat, xf::
 			mat_imagepyr2[0].write(i*pyr_w[0] + j,im1.data[i*pyr_w[0] + j]);
 		}	
 	}
+	std::cout << "Copied data for pydown \n";
 	//creating image pyramid
 
-	
+	std::cout << "FPGA launch\n";
 	#if __SDSCC__
 		perf_counter hw_ctr;
 		hw_ctr.start();
@@ -174,6 +180,7 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, cv::Mat flowUmat, cv::Mat flowVmat, xf::
 		hw_ctr.stop();
 		uint64_t hw_cycles = hw_ctr.avg_cpu_cycles();
 	#endif
+	std::cout << "FPGA done\n";
 	
 //write output flow vectors to Mat after splitting the bits.
 	for (int i=0; i<pyr_h[0]; i++) {
@@ -239,17 +246,18 @@ int main(int, char**)
 	flow.init(HEIGHT,WIDTH);
 	flow_iter.init(HEIGHT,WIDTH);
 	
+	//initializing flow pointers to 0
+	//initializing flow vector with 0s
+	cv::Mat init_mat= cv::Mat::zeros(HEIGHT,WIDTH, CV_32SC1);
+	flow_iter.copyTo((XF_PTSNAME(XF_32UC1,XF_NPPC1)*)init_mat.data);
+	flow.copyTo((XF_PTSNAME(XF_32UC1,XF_NPPC1)*)init_mat.data);
+	init_mat.release();
+	
     while (true)
     {
         frame_cnt++;
 	
-		//initializing flow pointers to 0
-		//initializing flow vector with 0s
-		cv::Mat init_mat= cv::Mat::zeros(HEIGHT,WIDTH, CV_32SC1);
-		flow_iter.copyTo((XF_PTSNAME(XF_32UC1,XF_NPPC1)*)init_mat.data);
-		flow.copyTo((XF_PTSNAME(XF_32UC1,XF_NPPC1)*)init_mat.data);
-		init_mat.release();
-		
+
         std::cout << "processing frame#" << frame_cnt << "\n";
 		cap.read(image_new_rgb);
         if (image_new_rgb.empty()) break;
@@ -328,6 +336,7 @@ int main(int, char**)
 
         image_new_rgb.copyTo(image_last_rgb);
 		image_new_rgb.release();
+		
     }
 
 	std::cout << "Task done\n";
