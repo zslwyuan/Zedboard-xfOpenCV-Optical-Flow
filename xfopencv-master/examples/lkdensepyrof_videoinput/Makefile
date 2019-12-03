@@ -104,7 +104,7 @@ LLIBS ?= -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_video -lopencv
 #-------------------------------------------------------------------------------
 DEBUG_FLAG  :=#-ggdb
 VERBOSE     :=#-verbose
-OLEVEL      := -O0
+OLEVEL      := -O3
 WARN_FLAGS  := -Wall -Wno-unused-label -Wno-unused-variable -Wno-unused-function# -Wno-int-in-bool-context -Wno-mismatched-tags -Wno-unknown-warning-option -Wno-unneeded-internal-declaration -Wno-extra-tokens
 
 SDSCC_FLAGS := -sds-pf ${PLATFORM} ${URAM_ENA_FLAG}\
