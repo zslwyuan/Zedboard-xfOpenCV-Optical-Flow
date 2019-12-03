@@ -300,6 +300,12 @@ int main(int, char**)
 		pyr_h[lvls] = (pyr_h[lvls-1]+1)>>1;
 	}
 		
+
+	cv::Mat im0;
+	cv::cvtColor(image_last_rgb, im0, CV_BGR2GRAY);
+	cv::Mat color_code_img;
+	color_code_img.create(im0.size(),CV_8UC3);
+
     while (true)
     {
         frame_cnt++;
@@ -309,35 +315,19 @@ int main(int, char**)
 		cap.read(image_new_rgb);
         if (image_new_rgb.empty()) break;
 
-        cv::Mat im0,im1;
-		cv::cvtColor(image_last_rgb, im0, CV_BGR2GRAY);
-		cv::cvtColor(image_new_rgb, im1, CV_BGR2GRAY);
-		
-
-		// cv::imwrite("input"+std::to_string(frame_cnt)+".png",im0);
-
-		std::cout << "copy done for frame#" << frame_cnt << "\n";
-
-    	if (im0.empty()) {
-    		std::cout <<"Loading image 1 failed, exiting!!\n";
-    		return -1;
-    	}
-    	else if (im1.empty()) {
-    		std::cout <<"Loading image 2 failed, exiting!!\n";
-    		return -1;
-    	}
-		
+        cv::Mat im1;		
+		cv::cvtColor(image_new_rgb, im1, CV_BGR2GRAY);		
 
 		std::cout << "initilization done for frame#" << frame_cnt << "\n";
 
 		//call the hls optical flow implementation
+		
 		pyrof_hw (im0, im1, glx, gly, flow, flow_iter, imagepyr1, imagepyr2, pyr_h, pyr_w);
 		
 		std::cout << "acceleration done for frame#" << frame_cnt << "\n";
 
 		//Color code the flow vectors on original image
-		cv::Mat color_code_img;
-		color_code_img.create(im0.size(),CV_8UC3);
+
 		Vec3ucpt color_px;
 		for(int rc=0;rc<im0.rows;rc++)
 		{
@@ -350,29 +340,26 @@ int main(int, char**)
 			}
 		}
 
+		//end color coding
+
 		std::cout << "post-processing done for frame#" << frame_cnt << "\n";
 
 		writer.write(color_code_img);
 
-		// cv::imwrite("rgb"+std::to_string(frame_cnt)+".png",color_code_img);
-
-		// std::cout << "wrting to video file done for frame#" << frame_cnt << "\n";
-
-		color_code_img.release();
-		//end color coding
-
-		//releaseing mats and pointers created inside the main for loop
-		im0.release();
-		im1.release();        
+		std::cout << "wrting to video file done for frame#" << frame_cnt << "\n";		
+		
+		//releaseing mats and pointers created inside the main for loop		
+		       
 		std::cout << "memory release done for frame#" << frame_cnt << "\n";
 
-        image_new_rgb.copyTo(image_last_rgb);
-		image_new_rgb.release();
+        im1.copyTo(im0);
+		im1.release(); 
 		
     }
 
 	std::cout << "Task done\n";
-
+	color_code_img.release();
+	im0.release();
     image_last_rgb.release();
     return 0;
 }
