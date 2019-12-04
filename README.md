@@ -37,7 +37,9 @@ Please note that two versions of optical flow implementation are provided: one i
     • Device Drivers → Staging drivers → Xilinx APF Accelerator driver (ON)
     • Device Drivers → Staging drivers → Xilinx APF Accelerator driver → Xilinx APF DMA engines support (ON)
 
-(2c) a modified ZED BSP is provided (webcam_zed.bsp), for which you just need to set the webcam driver according to (2a).
+(2c) when do "petalinux-config -c rootfs", add glibc and libstdc++
+
+(2d) a modified ZED BSP is provided (webcam_zed.bsp), for which you just need to set the webcam driver according to (2a).
 
 ***
 
