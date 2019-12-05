@@ -29,17 +29,20 @@ Please note that two versions of optical flow implementation are provided: one i
 (1) Please remember to copy the libraries to you SD card for dynamic linking.
 (2) If you want to set a WebCam for Zedboard for this application, you can follow the instruction: [Interfacing a USB WebCam and Enable USB Tethering on ZYNQ-7000 AP SoC Running Linux](https://medium.com/developments-and-implementations-on-zynq-7000-ap/interfacing-a-usb-webcam-and-enable-usb-tethering-on-zynq-7000-ap-soc-running-linux-1ba6d836749d). **Important:** The instruction missed some important parts:
 
-(2a) when do "petalinux-config -c kernel", find the driver for your WebCam in "Device Drivers-->Multimedia support\[y\]-->Media USB Adapters\[y\]-->YOUR WEBCAM\[y\] (e.g. for our system, SONIX JPEG USB Camera Driver)"
+(2a) when you do "petalinux-config -c kernel", find the driver for your WebCam in "Device Drivers-->Multimedia support\[y\]-->Media USB Adapters\[y\]-->YOUR WEBCAM\[y\] (e.g. for our system, SONIX JPEG USB Camera Driver)"
 
-(2b) when do "petalinux-config -c kernel", set up xlnk for your FPGA accelerator:
+(2b) when you do "petalinux-config -c kernel", set up xlnk for your FPGA accelerator:
 
     i   ) Device Drivers -> Staging drivers (ON) 
     ii  ) Device Drivers -> Staging drivers -> Xilinx APF Accelerator driver (ON)
     iii ) Device Drivers -> Staging drivers -> Xilinx APF Accelerator driver -> Xilinx APF DMA engines support (ON)
 
-(2c) when do "petalinux-config -c rootfs", add glibc and libstdc++
+(2c) when you do "petalinux-config -c rootfs", add glibc and libstdc++
 
 (2d) a modified ZED BSP is provided ([webcam_zed.bsp](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/webcam_zed.bsp)), for which you just need to set the webcam driver according to (2a).
+
+(2e) remember to copy the .so libraries in the directory "/tools/Xilinx/SDK/<your version>/gnu/aarch32/lin/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/libc/lib" to "/lib/arm-linux-gnueabihf" in the root file system of your SD card because the default version of glibc might be 2.27 but SDx compiles our source code with glibc-2.28, which might lead to errors.
+
 
 ***
 
