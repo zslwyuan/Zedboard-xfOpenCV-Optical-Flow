@@ -41,7 +41,7 @@ Please note that two versions of optical flow implementation are provided: one i
 
 (2d) a modified ZED BSP is provided ([webcam_zed.bsp](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/webcam_zed.bsp)), for which you just need to set the webcam driver according to (2a).
 
-(2e) remember to copy the .so libraries in the directory "/tools/Xilinx/SDK/<your version>/gnu/aarch32/lin/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/libc/lib" to "/lib/arm-linux-gnueabihf" in the root file system of your SD card because the default version of glibc might be 2.27 but SDx compiles our source code with glibc-2.28, which might lead to errors.
+(2e) remember to copy the .so libraries in the directory "/tools/Xilinx/SDK/2019.1/gnu/aarch32/lin/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/libc/lib" to "/lib/arm-linux-gnueabihf" in the root file system of your SD card because the default version of glibc might be 2.27 but SDx compiles our source code with glibc-2.28, which might lead to errors.
 
 
 ***
