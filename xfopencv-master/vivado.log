@@ -1,0 +1,63 @@
+#-----------------------------------------------------------
+# Vivado v2019.1 (64-bit)
+# SW Build 2552052 on Fri May 24 14:47:09 MDT 2019
+# IP Build 2548770 on Fri May 24 18:01:18 MDT 2019
+# Start of session at: Tue Dec  3 17:22:19 2019
+# Process ID: 15450
+# Current directory: /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master
+# Command line: vivado
+# Log file: /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/vivado.log
+# Journal file: /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput/_sds/p0/vivado/vpl/prj/prj.xpr
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput/_sds/iprepo/repo'.
+WARNING: [IP_Flow 19-3685] Ignored loading user repository '/tools/Xilinx/SDx/2019.1/data/ip/xilinx'. The path is contained within another repository.
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/tools/Xilinx/SDx/2019.1/data/cache/xilinx'.
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput/_sds/p0/vivado/vpl/.local/dsa/ipcache'.
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/tools/Xilinx/SDx/2019.1/data/ip'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/tools/Xilinx/Vivado/2019.1/data/ip'.
+WARNING: [IP_Flow 19-4830] Duplicate Interface found for 'xilinx.com:interface:sdsoc_trace:2.0'. The one found in location '/tools/Xilinx/SDx/2019.1/data/ip/xilinx/sdsoc_trace_v2_0/sdsoc_trace_v2_0.xml' will take precedence over the same Interface in location '/tools/Xilinx/Vivado/2019.1/data/ip/interfaces/sdsoc_trace_v2_0/sdsoc_trace_v2_0.xml'
+open_project: Time (s): cpu = 00:00:49 ; elapsed = 00:00:37 . Memory (MB): peak = 7027.695 ; gain = 656.023 ; free physical = 6568 ; free virtual = 28784
+update_compile_order -fileset sources_1
+write_dsa -force -include_bit /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput/zed.dsa
+INFO: [Vivado 12-4895] Creating DSA: /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput/zed.dsa ...
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In0' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In0' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In1' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In1' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In2' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In2' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In3' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In3' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In4' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In4' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In5' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In5' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In6' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In6' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In7' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In7' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In8' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In8' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In9' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In9' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In10' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In10' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In11' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In11' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In12' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In12' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In13' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In13' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In14' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In14' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [SDSoC-pfm-10] pfm_irq - port 'In15' is not the least significant available port on instance 'xlconcat_0', expected In16
+ERROR: [SDSoC-pfm-104] Incorrect 'In15' value for PFM.IRQ of '/xlconcat_0'
+ERROR: [Vivado 12-5878] Failed to generate hpfm file for BD File: /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput/_sds/p0/vivado/vpl/prj/prj.srcs/sources_1/bd/zed/zed.bd
+ERROR: [Common 17-53] User Exception: Unable to get hpfm file from project property dsa.hpfm_file or from the BD itself.
+exit
+INFO: [Common 17-206] Exiting Vivado at Tue Dec  3 17:25:29 2019...

@@ -1,0 +1,15 @@
+#-----------------------------------------------------------
+# Vivado v2019.1 (64-bit)
+# SW Build 2552052 on Fri May 24 14:47:09 MDT 2019
+# IP Build 2548770 on Fri May 24 18:01:18 MDT 2019
+# Start of session at: Tue Dec  3 17:22:19 2019
+# Process ID: 15450
+# Current directory: /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master
+# Command line: vivado
+# Log file: /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/vivado.log
+# Journal file: /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput/_sds/p0/vivado/vpl/prj/prj.xpr
+update_compile_order -fileset sources_1
+write_dsa -force -include_bit /home/tingyuan/Downloads/backup_up/Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput/zed.dsa
