@@ -1,0 +1,14 @@
+prefix=/home/tingyuan/Downloads/arm_opencv_install
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libavcodec
+Description: FFmpeg codec library
+Version: 53.61.100
+Requires: 
+Requires.private: libavutil = 51.35.100
+Conflicts:
+Libs: -L${libdir} -lavcodec 
+Libs.private: -ldl -lxvidcore -lx264 -lm -pthread -lz
+Cflags: -I${includedir}

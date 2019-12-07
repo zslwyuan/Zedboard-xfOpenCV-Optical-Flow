@@ -1,0 +1,14 @@
+prefix=/home/tingyuan/Downloads/arm_opencv_install
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libavformat
+Description: FFmpeg container format library
+Version: 53.32.100
+Requires: 
+Requires.private: libavcodec = 53.61.100
+Conflicts:
+Libs: -L${libdir} -lavformat 
+Libs.private: -ldl -lxvidcore -lx264 -lm -pthread -lz
+Cflags: -I${includedir}
