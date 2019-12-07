@@ -9,6 +9,7 @@
 
 7. copy the following text to ./project-spec/meta-user/recipes-bsp/device-tree/files/system-user.dtsi:
 
+
     /{
     xlnk {
     compatible = "xlnx,xlnk-1.0";
@@ -16,7 +17,9 @@
     };
 
 
+
 8. copy the following text to ./components/plnx_workspace/device-tree/device-tree/system-top.dts:
+
 
     &gem0 {
      phy-handle = <&phy0>;
@@ -40,6 +43,7 @@
      dr_mode = "host";
      usb-phy = <&usb_phy0>;
     };
+
 
 9. petalinux-build 
 
