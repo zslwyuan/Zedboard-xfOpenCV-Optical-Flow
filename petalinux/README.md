@@ -47,7 +47,7 @@
 
 9. petalinux-build 
 
-10. petalinux-package --boot --format BIN --fsbl ./images/linux/zynq\_fsbl.elf --fpga ../xfopencv-master/examples/lkdensepyrof_videoinput/_sds/p0/vivado/vpl/output/system.bit --u-boot ./images/linux/u-boot.elf
+10. petalinux-package --boot --format BIN --fsbl ./images/linux/zynq\_fsbl.elf --fpga ../../xfopencv-master/examples/lkdensepyrof_videoinput/_sds/p0/vivado/vpl/output/system.bit --u-boot ./images/linux/u-boot.elf
 
 11. copy the files in ./image/linux to the FAT32 partition on SD card
 
