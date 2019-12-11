@@ -32,7 +32,7 @@ Please note that three versions of optical flow implementation are provided: [fo
 
 2. source /tools/Xilinx/SDx/2019.1/settings64.sh
 3. make all -j4
-4. Then you can use the built SDSoC design for your purpose. For example, copy all the SD card files, the libraries and data (video/photos) into SD card. And boot the board.
+4. If you want to try the examples with video/webcam, you have to build the petalinux for video/webcam libraries and device drivers according the note below. Then you can use the built SDSoC design for your purpose. For example, copy all the SD card files, the libraries and data (video/photos) into SD card. And boot the board.
 
 ***
 
@@ -52,4 +52,4 @@ Please note that three versions of optical flow implementation are provided: [fo
 
 (2c) when you do **"petalinux-config -c rootfs"**, add glibc and libstdc++ in "File Packages System / misc"
 
-(2d) **a modified ZED BSP and hdf file are provided** ([here](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/petalinux)), for which you just need to set the webcam driver according to (2a). With this BSP, you don't need to follow the instruction mentioned in (2).
+(2d) **a modified ZED BSP and hdf file are provided** ([here](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/petalinux)), for which you just need to set the webcam driver according to (2a). With this BSP, you don't need to follow the instruction mentioned in (2). [A more detailed guide](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/petalinux/README.md) is provided.
