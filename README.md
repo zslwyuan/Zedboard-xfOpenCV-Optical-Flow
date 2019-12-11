@@ -15,14 +15,18 @@ This project is implemented based on SDSoC 2019.1.
 
 **Usage:**
 
-Please note that three versions of optical flow implementation are provided: for the processing of two images, for video file and for webcam streaming input.
+Please note that three versions of optical flow implementation are provided: [for the processing of two images](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_photoinput), [for video file](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_videoinput) and [for webcam streaming input](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_camerainput).
 
 1. enter the corresponding directory:
+
 ---
 cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput 
+
 cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_photoinput
+
 cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_camerainput
 ---
+
 2. source /tools/Xilinx/SDx/2019.1/settings64.sh
 3. make all -j4
 4. Then you can use the built SDSoC design for your purpose. For example, copy all the SD card files, the libraries and data (video/photos) into SD card. And boot the board.
