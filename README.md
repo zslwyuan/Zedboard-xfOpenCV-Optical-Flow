@@ -19,15 +19,12 @@ Please note that three versions of optical flow implementation are provided: [fo
 
 1. enter the corresponding directory:
 
----
+    cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput 
 
-cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput 
+    cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_photoinput
 
-cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_photoinput
+    cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_camerainput
 
-cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_camerainput
-
----
 
 2. source /tools/Xilinx/SDx/2019.1/settings64.sh
 3. make all -j4
