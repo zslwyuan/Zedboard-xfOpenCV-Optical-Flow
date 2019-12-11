@@ -3,6 +3,9 @@
 1. petalinux-create -t project -s webcam_zed.bsp
 2. cd avnet-digilent-zedboard-2019.1/
 3. petalinux-config --get-hw-description=`pwd`    (please note the .hdf file is extraxted from ./Xilinx/SDx/2019.1/platforms/zed/sw/prebuilt/)
+
+**if you use webcam_zed.bsp, you don't need the step 4~8.**
+
 4. petalinux-config -c kernel  (refer to the suggestions in the main README.MD file in the root of this repo)
 5. petalinux-config -c rootfs  (refer to the suggestions in the main README.MD file in the root of this repo)
 6. petalinux-build -c device-tree 
@@ -45,12 +48,14 @@
     };
 ---
 
-9. petalinux-build 
+9. fix a bug in petalinux-2019.1: replace "booti" with "bootm" in /avnet-digilent-zedboard-2019.1/project-spec/meta-plnx-generated/recipes-bsp/u-boot/configs/platform-auto.h
 
-10. petalinux-package --boot --format BIN --fsbl ./images/linux/zynq\_fsbl.elf --fpga ../../xfopencv-master/examples/lkdensepyrof_videoinput/_sds/p0/vivado/vpl/output/system.bit --u-boot ./images/linux/u-boot.elf
+10. petalinux-build 
 
-11. copy the files in ./image/linux to the FAT32 partition on SD card
+11. petalinux-package --boot --format BIN --fsbl ./images/linux/zynq\_fsbl.elf --fpga ../../xfopencv-master/examples/lkdensepyrof_videoinput/_sds/p0/vivado/vpl/output/system.bit --u-boot ./images/linux/u-boot.elf
 
-12. copy the ./image/linux/rootfs.cpio to the EXT4 partition on SD card
+12. copy the files in ./image/linux to the FAT32 partition on SD card
 
-12. go to the EXT4 partition and execute:    sudo pax -r -c -f rootfs.cpio
+13. copy the ./image/linux/rootfs.cpio to the EXT4 partition on SD card
+
+14. go to the EXT4 partition and execute:    sudo pax -r -c -f rootfs.cpio
