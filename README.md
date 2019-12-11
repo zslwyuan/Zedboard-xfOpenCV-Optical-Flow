@@ -55,12 +55,3 @@ Please note that three versions of optical flow implementation are provided: [fo
 (2d) **a modified ZED BSP and hdf file are provided** ([here](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/petalinux)), for which you just need to set the webcam driver according to (2a). With this BSP, you don't need to follow the instruction mentioned in (2).
 
 (2e) remember to copy the .so libraries in the directory "/tools/Xilinx/SDK/2019.1/gnu/aarch32/lin/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/libc/lib" to "/lib/arm-linux-gnueabihf" in the root file system of your SD card because the default version of glibc might be 2.27 but SDx compiles our source code with glibc-2.28, which might lead to errors.
-
-
-***
-
-**DEMO**
-
-***
-
-
