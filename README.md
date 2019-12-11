@@ -3,7 +3,7 @@
 
 ***
 
-This simple project implements xfOpenCV Optical Flow on Zedboard. 
+This simple project extends [xfOpenCV](https://github.com/Xilinx/xfopencv) Optical Flow in different ways for various scenarios on Zedboard. 
 
 Xilinx reVision provides many supports for high-end FPGA SoCs like ZCU102, while Zedboard is not supported. Compared to those high-end products, Zedboard is equiped with 32-bit Arm Core and less resource on FPGA. Besides, in the examples provided in xfOpenCV, no video application is presented.
 
@@ -20,11 +20,13 @@ Please note that three versions of optical flow implementation are provided: [fo
 1. enter the corresponding directory:
 
 ---
+
 cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput 
 
 cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_photoinput
 
 cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_camerainput
+
 ---
 
 2. source /tools/Xilinx/SDx/2019.1/settings64.sh
