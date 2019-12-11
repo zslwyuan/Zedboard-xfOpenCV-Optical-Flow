@@ -15,9 +15,14 @@ This project is implemented based on SDSoC 2019.1.
 
 **Usage:**
 
-Please note that two versions of optical flow implementation are provided: one is for the processing of two images and the other one is for video.
+Please note that three versions of optical flow implementation are provided: for the processing of two images, for video file and for webcam streaming input.
 
-1. cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof\_videoinput **or** cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_photoinput
+1. enter the corresponding directory:
+---
+cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_videoinput 
+cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_photoinput
+cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_camerainput
+---
 2. source /tools/Xilinx/SDx/2019.1/settings64.sh
 3. make all -j4
 4. Then you can use the built SDSoC design for your purpose. For example, copy all the SD card files, the libraries and data (video/photos) into SD card. And boot the board.
@@ -40,7 +45,7 @@ Please note that two versions of optical flow implementation are provided: one i
 
 (2c) when you do **"petalinux-config -c rootfs"**, add glibc and libstdc++ in "File Packages System / misc"
 
-(2d) **a modified ZED BSP and hdf file are provided** ([here](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/petalinux)), for which you just need to set the webcam driver according to (2a).
+(2d) **a modified ZED BSP and hdf file are provided** ([here](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/petalinux)), for which you just need to set the webcam driver according to (2a). With this BSP, you don't need to follow the instruction mentioned in (2).
 
 (2e) remember to copy the .so libraries in the directory "/tools/Xilinx/SDK/2019.1/gnu/aarch32/lin/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/libc/lib" to "/lib/arm-linux-gnueabihf" in the root file system of your SD card because the default version of glibc might be 2.27 but SDx compiles our source code with glibc-2.28, which might lead to errors.
 
