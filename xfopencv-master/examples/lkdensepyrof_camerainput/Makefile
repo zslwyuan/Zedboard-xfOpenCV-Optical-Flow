@@ -67,7 +67,7 @@ FUNC_TYPE1     := video
 FUNC_NAME      := xf_pyr_dense_optical_flow
 FUNC_NAME_1    := xf_pyr_down
 FUNC_NAME_2    := xf_pyr_dense_optical_flow_wrapper
-FUNC_DIR       := lkdensepyrof_camerainput
+FUNC_DIR       := lkdensepyrof_videoinput
 HW_TOP_NAME    := "xf::pyrDown <0,  480, 640, 1,${URAM_ENA}>"
 #                             <XF_8UC1,HEIGHT,WIDTH,XF_NPPC1,XF_USE_URAM>
 HW_TOP_NAME_1  := "xf::densePyrOpticalFlow<2, 20,3,8,5,0,480,640,1,${URAM_ENA}>"
@@ -96,7 +96,7 @@ APPSOURCES := ${TB_SRC_PATH}/${FUNC_NAME}_tb.cpp ${TB_SRC_PATH}/${FUNC_NAME}_acc
 #-------------------------------------------------------------------------------
 IDIRS = -I. -I../../../arm_opencv_249/include -I../../../arm_other_libs/include -I${PROJ_TOP_PATH}/include
 LDIRS =  -L../../../arm_opencv_249/lib -L../../../arm_other_libs/lib/
-LLIBS ?= -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect  -lopencv_flann -llzma -ltiff -lpng16 -lz -ljpeg -ldl -lrt -lwebp  -lopencv_flann -lavcodec -lavformat -lavutil -lswscale -lx264 -lv4l1 -lv4l2 -lv4l2rds -lv4lconvert
+LLIBS ?= -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect  -lopencv_flann -llzma -ltiff -lpng16 -lz -ljpeg -ldl -lrt -lwebp  -lopencv_flann -lavcodec -lavformat -lavutil -lswscale -lx264 -lv4l1 -lv4l2 -lv4l2rds -lv4lconvert  -lpthread
 
 
 #-------------------------------------------------------------------------------

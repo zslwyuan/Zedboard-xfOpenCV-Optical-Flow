@@ -32,6 +32,8 @@
 #include "opencv2/opencv.hpp"
 #include <cstring>
 #include <unistd.h>
+#include <sys/time.h>
+#define MILLION 1000000
 
 /* Color Coding */
 // kernel returns this type. Packed strcuts on axi ned to be powers-of-2.
@@ -61,8 +63,14 @@ void getPseudoColorInt (IN_TYPE pix, signed char fx, signed char fy, rgba_t& rgb
   int x = 127 + (int) (fx * normFac);
   if (y>255) y=255;
   if (y<0) y=0;
+
+  if (y<127+30 && y > 127-30) y =127;
+
+
   if (x>255) x=255;
   if (x<0) x=0;
+
+  if (x<127+30 && x > 127-30) x =127;
 
   rgb_t rgb;
   if (x > 127) {
@@ -247,46 +255,247 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, signed char flowUmat[HEIGHT][WIDTH], sig
 
 //using namespace cv;
 
-int main(int, char**)
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <unistd.h>
+
+
+ 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;/*��ʼ��������*/
+pthread_cond_t  cond = PTHREAD_COND_INITIALIZER;//init cond
+cv::Mat global_image_last_rgb;
+int processing = 1234;
+int global_cnt = 0;
+
+void *thread_cam(void*);
+void *thread_of(void*);
+
+int main(void){
+    pthread_t t_a;
+    pthread_t t_b;//two thread
+ 
+    pthread_create(&t_a,NULL,thread_of,(void*)NULL);
+    pthread_create(&t_b,NULL,thread_cam,(void*)NULL);//Create thread
+    
+    printf("t_a:0x%x, t_b:0x%x:", t_a, t_b);
+    pthread_join(t_b,NULL);//wait a_b thread end
+    pthread_join(t_a,NULL);//wait a_b thread end
+
+    global_image_last_rgb.release();
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&cond);
+    exit(0);
+}
+
+void *thread_cam(void *junk)
 {
+    struct timespec tpstart;
+    struct timespec tpend;
     //cv::VideoCapture cap("in.avi"); // open the default camera
     cv::VideoCapture cap(0+CV_CAP_V4L2); 
     cap.set(CV_CAP_PROP_FRAME_WIDTH,640);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT,480);
+    cap.set(CV_CAP_PROP_FPS,5.0);
+    //cap.set(CV_CAP_PROP_FOURCC, CV_FOURCC('Y', 'U', 'Y', '2'));
+    //cap.set(CV_CAP_PROP_AUTO_EXPOSURE, 0.25);
 
     if(!cap.isOpened())  // check if we succeeded
     {
         std::cout << "failed to load video \n";
-        return -1;
+		processing = 0;
+        return 0;
     }   
     else
     {
          std::cout << "succeed to load video \n";
     }
-    cv::Mat image_last_rgb;
-    cv::Mat tmp;
-    for (int cnt=0;cnt<100;cnt++)
-{
-    bool suc = cap.read(image_last_rgb);
-    for (int tmp_cnt=0;tmp_cnt<6;tmp_cnt++)
-    {
-        suc = cap.grab();
-    }
     
-    
-    while (!suc || image_last_rgb.empty())
-    {
-        suc = cap.read(image_last_rgb);
-	std::cout << "tring again to load frame #" << cnt << "\n";
-    }
+	int cnt = 0;
 
+	bool the_first_frame = 1;
+	long timedif;
 
-    cv::imwrite(std::to_string(cnt)+".bmp",image_last_rgb);
-    std::cout << "writing frame #" << cnt << "\n";
-    
+    while (true)
+    {
+		cnt++;
+
+		if (the_first_frame)
+		{
+			clock_gettime(CLOCK_MONOTONIC, &tpstart);
+			the_first_frame = 0;
+		}
+		else
+		{
+			clock_gettime(CLOCK_MONOTONIC, &tpend);
+        	timedif = MILLION*(tpend.tv_sec-tpstart.tv_sec)+(tpend.tv_nsec-tpstart.tv_nsec)/1000;
+			if (timedif > 30*1000000) break;
+		}
+
+		pthread_mutex_lock(&mutex);
+		
+		global_cnt++;
+        bool suc = cap.read(global_image_last_rgb);
+        for (int tmp_cnt=0;tmp_cnt<6;tmp_cnt++)
+        {
+            suc = cap.grab();
+        }       
+        while (!suc || global_image_last_rgb.empty())
+        {
+            suc = cap.read(global_image_last_rgb);
+    		std::cout << "tring again to load frame #" << cnt << "\n";
+        }
+        std::cout << "got frame #" << cnt << "\n";
+		pthread_mutex_unlock(&mutex); 
+		
+
+		usleep(10000);
+    }
+    processing = 0;
+
+    cap.release();
+    return 0;
 }
-image_last_rgb.release();
-cap.release();
-tmp.release();
+
+
+void *thread_of(void *junk)
+{
+    struct timespec tpstart;
+    struct timespec tpend;
+	cv::VideoWriter writer("VideoTest.avi", CV_FOURCC('I', '4', '2', '0'), 5.0, cv::Size(640, 480));
+
+	//allocating memory spaces for all the hardware operations
+	static xf::Mat<XF_8UC1,HEIGHT,WIDTH,XF_NPPC1>imagepyr1[NUM_LEVELS];
+	static xf::Mat<XF_8UC1,HEIGHT,WIDTH,XF_NPPC1>imagepyr2[NUM_LEVELS];
+	static xf::Mat<XF_32UC1,HEIGHT,WIDTH,XF_NPPC1>flow;
+	static xf::Mat<XF_32UC1,HEIGHT,WIDTH,XF_NPPC1>flow_iter;
+	for(int i=0; i<NUM_LEVELS ; i++)
+	{
+		imagepyr1[i].init(HEIGHT,WIDTH);
+		imagepyr2[i].init(HEIGHT,WIDTH);
+	}
+	flow.init(HEIGHT,WIDTH);
+	flow_iter.init(HEIGHT,WIDTH);
+	
+	//initializing flow pointers to 0
+	//initializing flow vector with 0s
+	cv::Mat init_mat= cv::Mat::zeros(HEIGHT,WIDTH, CV_32SC1);
+	flow_iter.copyTo((XF_PTSNAME(XF_32UC1,XF_NPPC1)*)init_mat.data);
+	flow.copyTo((XF_PTSNAME(XF_32UC1,XF_NPPC1)*)init_mat.data);
+	init_mat.release();
+	
+	signed char glx[HEIGHT][WIDTH]; 
+	signed char gly[HEIGHT][WIDTH];
+
+	// Auviz Hardware implementation
+	/***********************************************************************************/
+	//Setting image sizes for each pyramid level
+	int pyr_w[NUM_LEVELS], pyr_h[NUM_LEVELS];
+	pyr_h[0] = HEIGHT;
+	pyr_w[0] = WIDTH;
+	for(int lvls=1; lvls< NUM_LEVELS; lvls++)
+	{
+		pyr_w[lvls] = (pyr_w[lvls-1]+1)>>1;
+		pyr_h[lvls] = (pyr_h[lvls-1]+1)>>1;
+	}
+
+	cv::Mat image_last_rgb;
+	cv::Mat image_new_rgb;
+
+	while (global_cnt<10)
+		usleep(10000);
+
+	pthread_mutex_lock(&mutex);
+	global_image_last_rgb.copyTo(image_last_rgb);
+	pthread_mutex_unlock(&mutex);
+
+	cv::Mat im0;
+	cv::cvtColor(image_last_rgb, im0, CV_BGR2GRAY);
+	cv::Mat color_code_img;
+	color_code_img.create(im0.size(),CV_8UC3);
+
+	bool the_first_frame = 1;
+	long timedif;
+
+	while (processing > 0)
+	{
+		if (the_first_frame)
+		{
+			pthread_mutex_lock(&mutex);
+			// cv::imwrite(std::to_string(global_cnt)+".bmp",global_image_last_rgb);
+			std::cout << "cloning frame #" << global_cnt << "\n===================\n===================\n";
+			global_image_last_rgb.copyTo(image_new_rgb);
+			pthread_mutex_unlock(&mutex); 
+			clock_gettime(CLOCK_MONOTONIC, &tpstart);
+			the_first_frame = 0;
+		}
+		else
+		{
+			clock_gettime(CLOCK_MONOTONIC, &tpend);
+        	timedif = MILLION*(tpend.tv_sec-tpstart.tv_sec)+(tpend.tv_nsec-tpstart.tv_nsec)/1000;
+
+			while (timedif < 200000)
+			{
+				clock_gettime(CLOCK_MONOTONIC, &tpend);
+				timedif = MILLION*(tpend.tv_sec-tpstart.tv_sec)+(tpend.tv_nsec-tpstart.tv_nsec)/1000;
+			}
+			tpstart = tpend;
+
+			pthread_mutex_lock(&mutex);
+			// cv::imwrite(std::to_string(global_cnt)+".bmp",global_image_last_rgb);
+			std::cout << "cloning frame #" << global_cnt << "\n===================\n===================\n";
+			global_image_last_rgb.copyTo(image_new_rgb);
+			pthread_mutex_unlock(&mutex); 
+		}
+		std::cout << "processing frame#" << global_cnt << "\n";
+
+		cv::Mat im1;		
+		cv::cvtColor(image_new_rgb, im1, CV_BGR2GRAY);		
+
+		std::cout << "initilization done for frame#" << global_cnt << "\n";
+
+		//call the hls optical flow implementation
+		
+		pyrof_hw (im0, im1, glx, gly, flow, flow_iter, imagepyr1, imagepyr2, pyr_h, pyr_w);
+		
+		std::cout << "acceleration done for frame#" << global_cnt << "\n";
+
+		//Color code the flow vectors on original image
+
+		Vec3ucpt color_px;
+		for(int rc=0;rc<im0.rows;rc++)
+		{
+			for(int cc=0;cc<im0.cols;cc++)
+			{
+				rgba_t colorcodedpx;
+				getPseudoColorInt(im0.at<unsigned char>(rc,cc),glx[rc][cc],gly[rc][cc],colorcodedpx);
+				color_px = Vec3ucpt(colorcodedpx.b, colorcodedpx.g, colorcodedpx.r);
+				color_code_img.at<Vec3ucpt>(rc,cc) = color_px;
+			}
+		}
+
+		//end color coding
+
+		std::cout << "post-processing done for frame#" << global_cnt << "\n";
+
+		writer.write(color_code_img);
+
+		std::cout << "wrting to video file done for frame#" << global_cnt << "\n";		
+		
+		//releaseing mats and pointers created inside the main for loop		
+			
+		std::cout << "memory release done for frame#" << global_cnt << "\n";
+
+		im1.copyTo(im0);
+		im1.release(); 
+
+
+	}
+	std::cout << "Task done\n";
+	color_code_img.release();
+	im0.release();
+	image_last_rgb.release();
     return 0;
 }
