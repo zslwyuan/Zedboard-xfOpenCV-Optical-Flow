@@ -63,6 +63,8 @@ Please note that three versions of optical flow implementation are provided: [fo
 
 ![image](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/demo_photos/input.gif | width=100)
 
+<img src="https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/demo_photos/input.gif" data-canonical-src="https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/demo_photos/input.gif" width="200" />
+
 **OUTPUT**
 
 ![image](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/demo_photos/output.gif | width=100)
