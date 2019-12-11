@@ -38,7 +38,7 @@ Please note that three versions of optical flow implementation are provided: [fo
 
 **Note**
 
-(1) Please remember to **copy the libraries including opencv and other libs** to /usr/lib/ in you SD card for dynamic linking.
+(1) Please remember to **copy the libraries including opencv and other libs** and **libsds_lib.so** (this file is in /Xilinx/SDx/2019.1/target/aarch32-linux/lib) to /usr/lib/ or /lib in you SD card for dynamic linking.
 
 (2) If you want to set **a WebCam for Zedboard** for this application, you can follow the instruction: [Interfacing a USB WebCam and Enable USB Tethering on ZYNQ-7000 AP SoC Running Linux](https://medium.com/developments-and-implementations-on-zynq-7000-ap/interfacing-a-usb-webcam-and-enable-usb-tethering-on-zynq-7000-ap-soc-running-linux-1ba6d836749d). **Important:** The instruction missed some important parts:
 
