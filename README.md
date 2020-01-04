@@ -19,7 +19,7 @@ This project is implemented based on SDSoC 2019.1.
 
 **Usage:**
 
-Please note that three versions of optical flow implementation are provided: [for the processing of two images](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_photoinput), [for video file](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_videoinput) and [for webcam streaming input](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_camerainput).
+Please note that three versions of optical flow implementation are provided: [for the processing of two images](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_photoinput), [for video file](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_videoinput), [for webcam streaming input](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_camerainput) and [for UDP Ethernet output with webcam streaming input](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_UDPoutput_camerainput) .
 
 1. enter the corresponding directory:
 
@@ -28,6 +28,8 @@ Please note that three versions of optical flow implementation are provided: [fo
     cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_photoinput
 
     cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_camerainput
+
+    cd Zedboard-xfOpenCV-Optical-Flow/xfopencv-master/examples/lkdensepyrof_UDPoutput_camerainput
 
 
 2. source /tools/Xilinx/SDx/2019.1/settings64.sh
