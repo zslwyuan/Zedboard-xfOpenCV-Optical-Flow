@@ -58,4 +58,4 @@
 
 13. copy the ./image/linux/rootfs.cpio to the EXT4 partition on SD card
 
-14. go to the EXT4 partition and execute:    sudo pax -r -c -f rootfs.cpio
+14. go to the EXT4 partition and execute:    sudo pax -r -c -f rootfs.cpio & sync
