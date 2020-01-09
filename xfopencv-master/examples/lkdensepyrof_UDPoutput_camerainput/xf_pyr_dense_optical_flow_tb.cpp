@@ -154,7 +154,7 @@ void getPseudoColorInt(IN_TYPE pix, signed char fx, signed char fy, rgba_t &rgba
     rgba.a = 0;
 }
 
-void pyrof_hw(cv::Mat im0, cv::Mat im1, signed char flowUmat[HEIGHT][WIDTH],
+inline void pyrof_hw(cv::Mat im0, cv::Mat im1, signed char flowUmat[HEIGHT][WIDTH],
               signed char flowVmat[HEIGHT][WIDTH], xf::Mat<XF_32UC1, HEIGHT, WIDTH, XF_NPPC1> &flow,
               xf::Mat<XF_32UC1, HEIGHT, WIDTH, XF_NPPC1> &flow_iter,
               xf::Mat<XF_8UC1, HEIGHT, WIDTH, XF_NPPC1> mat_imagepyr1[NUM_LEVELS],
@@ -272,16 +272,18 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, signed char flowUmat[HEIGHT][WIDTH],
 
 
     // write output flow vectors to Mat after splitting the bits.
+
+    
     if (flag_flowin)
     {
-
+        unsigned int* ptr_flow = (unsigned int*)flow_iter.data;
         for (int i = 0; i < pyr_h[0]; i++)
         {
             int offset = i * pyr_w[0];
             for (int j = 0; j < pyr_w[0]; j++)
             {
                 unsigned int tempcopy = 0;
-                tempcopy = flow_iter.read(offset + j);
+                tempcopy = ptr_flow[offset + j];
                 short splittemp1 = (tempcopy >> 16);
                 short splittemp2 = (0x0000FFFF & tempcopy);
                 signed char *uflow = (signed char *)&splittemp1;
@@ -294,13 +296,14 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, signed char flowUmat[HEIGHT][WIDTH],
     }
     else
     {
+        unsigned int* ptr_flow = (unsigned int*)flow.data;
         for (int i = 0; i < pyr_h[0]; i++)
         {
             int offset = i * pyr_w[0];
             for (int j = 0; j < pyr_w[0]; j++)
             {
                 unsigned int tempcopy = 0;
-                tempcopy = flow.read(offset + j);
+                tempcopy = ptr_flow[offset + j];
                 short splittemp1 = (tempcopy >> 16);
                 short splittemp2 = (0x0000FFFF & tempcopy);
                 signed char *uflow = (signed char *)&splittemp1;
@@ -311,6 +314,7 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, signed char flowUmat[HEIGHT][WIDTH],
             }
         }
     }
+
 
     clock_gettime(CLOCK_MONOTONIC, &tpend);
     timedif = MILLION * (tpend.tv_sec - tpstart.tv_sec) +
