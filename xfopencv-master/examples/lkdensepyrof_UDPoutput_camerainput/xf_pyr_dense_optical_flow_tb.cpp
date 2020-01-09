@@ -328,9 +328,10 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, signed char flowUmat[HEIGHT][WIDTH],
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_send = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER; // init cond
+pthread_cond_t image_captured = PTHREAD_COND_INITIALIZER; // init cond
 cv::Mat global_image_last_rgb;
 cv::Mat image_send;
-bool image_consumed = 0;
+bool need_image = 0;
 bool image_created = 0;
 int processing = 1234;
 int global_cnt = 0;
@@ -386,6 +387,7 @@ int main(void)
     pthread_mutex_destroy(&mutex);
     pthread_mutex_destroy(&mutex_send);
     pthread_cond_destroy(&cond);
+    pthread_cond_destroy(&image_captured);
     exit(0);
 }
 
@@ -421,36 +423,23 @@ void *thread_cam(void *junk)
     {
         cnt++;
 
-        if (the_first_frame)
-        {
-            clock_gettime(CLOCK_MONOTONIC, &tpstart);
-            the_first_frame = 0;
-        }
-        else
-        {
-            clock_gettime(CLOCK_MONOTONIC, &tpend);
-            timedif = MILLION * (tpend.tv_sec - tpstart.tv_sec) +
-                      (tpend.tv_nsec - tpstart.tv_nsec) / 1000;
-            // if (timedif > 30*1000000) break;
-        }
+        bool suc;
+        
 
-        pthread_mutex_lock(&mutex);
-
-        global_cnt++;
-        bool suc = cap.read(global_image_last_rgb);
-        for (int tmp_cnt = 0; tmp_cnt < 3; tmp_cnt++)
-        {
-            suc = cap.grab();
-        }
+        pthread_mutex_lock(&mutex);        
+        global_cnt++;        
+        suc = cap.read(global_image_last_rgb);
         while (!suc || global_image_last_rgb.empty())
         {
             suc = cap.read(global_image_last_rgb);
             std::cout << "tring again to load frame #" << cnt << "\n";
-        }
-        std::cout << "got frame #" << cnt << "\n";
+        }   
+        
+        pthread_cond_signal(&image_captured);
         pthread_mutex_unlock(&mutex);
+        std::cout << "got frame #" << cnt << "\n";
+        usleep(100);
 
-        usleep(10000);
     }
     processing = 0;
 
@@ -502,12 +491,14 @@ void *thread_of(void *junk)
     cv::Mat image_last_rgb;
     cv::Mat image_new_rgb;
 
-    while (global_cnt < 2)
-        usleep(10000);
+    // while (global_cnt < 2)
+    //     usleep(10000);
 
     pthread_mutex_lock(&mutex);
+    pthread_cond_wait(&image_captured, &mutex);
     global_image_last_rgb.copyTo(image_last_rgb);
     pthread_mutex_unlock(&mutex);
+    
 
     cv::Mat im0;
     cv::cvtColor(image_last_rgb, im0, CV_BGR2GRAY);
@@ -530,14 +521,15 @@ void *thread_of(void *junk)
 
     while (processing > 0)
     {
-
+        
 
         pthread_mutex_lock(&mutex);
+        pthread_cond_wait(&image_captured, &mutex);
+        global_image_last_rgb.copyTo(image_new_rgb);
+        pthread_mutex_unlock(&mutex);
         // cv::imwrite(std::to_string(global_cnt)+".bmp",global_image_last_rgb);
         std::cout << "cloning frame #" << global_cnt
                     << "\n===================\n===================\n";
-        global_image_last_rgb.copyTo(image_new_rgb);
-        pthread_mutex_unlock(&mutex);
 
         std::cout << "processing frame#" << global_cnt << "\n";
 
