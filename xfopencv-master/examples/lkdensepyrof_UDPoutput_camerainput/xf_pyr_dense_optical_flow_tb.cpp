@@ -262,6 +262,14 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, signed char flowUmat[HEIGHT][WIDTH],
     uint64_t hw_cycles = hw_ctr.avg_cpu_cycles();
 #endif
     std::cout << "FPGA done\n";
+    struct timespec tpstart;
+    struct timespec tpend;
+    long timedif;
+
+
+    clock_gettime(CLOCK_MONOTONIC, &tpstart);
+
+
 
     // write output flow vectors to Mat after splitting the bits.
     if (flag_flowin)
@@ -304,6 +312,11 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, signed char flowUmat[HEIGHT][WIDTH],
         }
     }
 
+    clock_gettime(CLOCK_MONOTONIC, &tpend);
+    timedif = MILLION * (tpend.tv_sec - tpstart.tv_sec) +
+                (tpend.tv_nsec - tpstart.tv_nsec) / 1000;
+    std::cout << "   FPGA lag process time" << timedif << "us\n";
+
     return;
 }
 
@@ -312,169 +325,25 @@ void pyrof_hw(cv::Mat im0, cv::Mat im1, signed char flowUmat[HEIGHT][WIDTH],
 // size enough for 640*480
 #define REMOTEPORT 8888
 
-int main_BACKUP(int argc, char *argv[])
-{
-    cv::Mat frame;
-    cv::VideoCapture cap;
-    std::vector<unsigned char> inImage(BUF_SIZE);
-    /* open camera */
-    cap.open(0);
-    if (!cap.isOpened())
-    {
-        std::cout << "ERROR! Unable to open camera\n";
-        return -1;
-    }
-
-    int mysocket, len;
-    int i = 0;
-    struct sockaddr_in6 addr;
-    int addr_len;
-    char msg[BUF_SIZE];
-    char REMOTEIP[1000];
-    memset(REMOTEIP, 0, sizeof(REMOTEIP));
-    scanf("%s", REMOTEIP);
-
-    if ((mysocket = socket(AF_INET6, SOCK_DGRAM, 0)) < 0)
-    {
-        perror("error:");
-        return (1);
-    }
-    else
-    {
-        printf("socket created ...\n");
-        printf("socket id :%d \n", mysocket);
-        printf("rmote ip : %s\n", REMOTEIP);
-        printf("remote port :%d \n", REMOTEPORT);
-    }
-
-    addr_len = sizeof(struct sockaddr_in6);
-    bzero(&addr, sizeof(addr));
-    addr.sin6_family = AF_INET6;
-    addr.sin6_port = htons(REMOTEPORT);
-    while (inet_pton(AF_INET6, REMOTEIP, &addr.sin6_addr) <= 0)
-    {
-        printf("wrong remote ip format\n");
-        memset(REMOTEIP, 0, sizeof(REMOTEIP));
-        scanf("%s", REMOTEIP);
-    }
-
-    char cok[1] = {0x55};
-    char cokstart[1] = {0};
-    long long j = 0;
-    int sizelen = 0;
-    int sizejpg = 0;
-    unsigned char msgImage[BUF_SIZE];
-    for (;;)
-    {
-        /* read one frame */
-        cap.read(frame);
-        /* check if we succeeded */
-        if (frame.empty())
-        {
-            std::cout << "ERROR! blank frame grabbed\n";
-            break;
-        }
-        std::cout << " captured\n";
-
-        /* get trigger from server's command */
-        if (cok[0] == 0x55)
-        {
-            cok[0] = 0;
-
-            /* encode frame to JPG data */
-            imencode(".jpg", frame, inImage);
-            std::cout << " imencoded\n";
-
-            /* get length of jpg */
-            int datalen = inImage.size();
-
-            /* prepare char to save jpg data */
-            unsigned char msgLen[4];
-            msgLen[0] = datalen >> 24;
-            msgLen[1] = datalen >> 16;
-            msgLen[2] = datalen >> 8;
-            msgLen[3] = datalen;
-
-            /* send lenght to server first */
-            // sizelen=send(mysocket,msgLen,4,0);
-            sizelen = sendto(mysocket, msgLen, 4, 0, (struct sockaddr *)&addr, addr_len);
-            std::cout << " sent length\n";
-
-            /* put vector data to char */
-            for (int i = 0; i < datalen; i++)
-            {
-                msgImage[i] = inImage[i];
-            }
-
-            /* get lenght response ack from server */
-            // recv(mysocket,cokstart,1,0);
-            recvfrom(mysocket, cokstart, 1, 0, (struct sockaddr *)&addr, (socklen_t *)&addr_len);
-            std::cout << " get lenght response ack from serve\n";
-
-            if (cokstart[0] == 0x33)
-            {
-                std::vector<char> vec;
-                cv::Mat img_decode;
-                std::string filename = "";
-
-                /* decode than save display to save to file. This is optional function */
-                cokstart[0] = 0x0;
-
-                /* put data to vector */
-                for (int i = 0; i < datalen; i++)
-                {
-                    vec.push_back(msgImage[i]);
-                }
-
-                usleep(1000);
-                /* send data to server */
-                j++;
-                std::cout << "sending frame # " << j << "img size=" << datalen << "bytes\n";
-
-                unsigned long long tmp_offset = 0;
-                while (datalen)
-                {
-                    if (datalen > 32 * 1024)
-                    {
-                        sizejpg = sendto(mysocket, msgImage + tmp_offset, 32 * 1024, 0,
-                                         (struct sockaddr *)&addr, addr_len);
-                        datalen -= 32 * 1024;
-                        tmp_offset += 32 * 1024;
-                    }
-                    else
-                    {
-                        sizejpg = sendto(mysocket, msgImage + tmp_offset, datalen, 0,
-                                         (struct sockaddr *)&addr, addr_len);
-                        datalen = 0;
-                        tmp_offset += 32 * 1024;
-                    }
-                }
-
-                // sizejpg=send(mysocket,msgImage,datalen,0);
-
-                usleep(1000);
-
-                /* get response ack from server then can send the next frame*/
-                recvfrom(mysocket, cok, 1, 0, (struct sockaddr *)&addr, (socklen_t *)&addr_len);
-                // recv(mysocket,cok,1,0);
-            }
-        }
-    }
-}
-
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_send = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t cond = PTHREAD_COND_INITIALIZER; // init cond
 cv::Mat global_image_last_rgb;
+cv::Mat image_send;
+bool image_consumed = 0;
+bool image_created = 0;
 int processing = 1234;
 int global_cnt = 0;
 
 void *thread_cam(void *);
 void *thread_of(void *);
+void *thread_send(void *);
 
 int main(void)
 {
     pthread_t t_a;
-    pthread_t t_b; // two thread
+    pthread_t t_b; 
+    pthread_t t_c; 
 
     memset(REMOTEIP, 0, sizeof(REMOTEIP));
     scanf("%s", REMOTEIP);
@@ -505,13 +374,17 @@ int main(void)
 
     pthread_create(&t_a, NULL, thread_of, (void *)NULL);
     pthread_create(&t_b, NULL, thread_cam, (void *)NULL); // Create thread
+    pthread_create(&t_c, NULL, thread_send, (void *)NULL); // Create thread
 
-    printf("t_a:0x%x, t_b:0x%x:", t_a, t_b);
-    pthread_join(t_b, NULL); // wait a_b thread end
-    pthread_join(t_a, NULL); // wait a_b thread end
+    printf("t_a:0x%x, t_b:0x%x, t_c:0x%x:", t_a, t_b, t_c);
+    pthread_join(t_b, NULL); // thread end
+    pthread_join(t_a, NULL); // thread end
+    pthread_join(t_c, NULL); // thread end
+
 
     global_image_last_rgb.release();
     pthread_mutex_destroy(&mutex);
+    pthread_mutex_destroy(&mutex_send);
     pthread_cond_destroy(&cond);
     exit(0);
 }
@@ -565,7 +438,7 @@ void *thread_cam(void *junk)
 
         global_cnt++;
         bool suc = cap.read(global_image_last_rgb);
-        for (int tmp_cnt = 0; tmp_cnt < 6; tmp_cnt++)
+        for (int tmp_cnt = 0; tmp_cnt < 3; tmp_cnt++)
         {
             suc = cap.grab();
         }
@@ -629,7 +502,7 @@ void *thread_of(void *junk)
     cv::Mat image_last_rgb;
     cv::Mat image_new_rgb;
 
-    while (global_cnt < 10)
+    while (global_cnt < 2)
         usleep(10000);
 
     pthread_mutex_lock(&mutex);
@@ -657,38 +530,15 @@ void *thread_of(void *junk)
 
     while (processing > 0)
     {
-        if (the_first_frame)
-        {
-            pthread_mutex_lock(&mutex);
-            // cv::imwrite(std::to_string(global_cnt)+".bmp",global_image_last_rgb);
-            std::cout << "cloning frame #" << global_cnt
-                      << "\n===================\n===================\n";
-            global_image_last_rgb.copyTo(image_new_rgb);
-            pthread_mutex_unlock(&mutex);
-            clock_gettime(CLOCK_MONOTONIC, &tpstart);
-            the_first_frame = 0;
-        }
-        else
-        {
-            clock_gettime(CLOCK_MONOTONIC, &tpend);
-            timedif = MILLION * (tpend.tv_sec - tpstart.tv_sec) +
-                      (tpend.tv_nsec - tpstart.tv_nsec) / 1000;
 
-            while (timedif < 200000)
-            {
-                clock_gettime(CLOCK_MONOTONIC, &tpend);
-                timedif = MILLION * (tpend.tv_sec - tpstart.tv_sec) +
-                          (tpend.tv_nsec - tpstart.tv_nsec) / 1000;
-            }
-            tpstart = tpend;
 
-            pthread_mutex_lock(&mutex);
-            // cv::imwrite(std::to_string(global_cnt)+".bmp",global_image_last_rgb);
-            std::cout << "cloning frame #" << global_cnt
-                      << "\n===================\n===================\n";
-            global_image_last_rgb.copyTo(image_new_rgb);
-            pthread_mutex_unlock(&mutex);
-        }
+        pthread_mutex_lock(&mutex);
+        // cv::imwrite(std::to_string(global_cnt)+".bmp",global_image_last_rgb);
+        std::cout << "cloning frame #" << global_cnt
+                    << "\n===================\n===================\n";
+        global_image_last_rgb.copyTo(image_new_rgb);
+        pthread_mutex_unlock(&mutex);
+
         std::cout << "processing frame#" << global_cnt << "\n";
 
         cv::Mat im1;
@@ -698,12 +548,20 @@ void *thread_of(void *junk)
 
         // call the hls optical flow implementation
 
+        clock_gettime(CLOCK_MONOTONIC, &tpstart);
+
         pyrof_hw(im0, im1, glx, gly, flow, flow_iter, imagepyr1, imagepyr2, pyr_h, pyr_w);
 
         std::cout << "acceleration done for frame#" << global_cnt << "\n";
 
+        clock_gettime(CLOCK_MONOTONIC, &tpend);
+        timedif = MILLION * (tpend.tv_sec - tpstart.tv_sec) +
+                    (tpend.tv_nsec - tpstart.tv_nsec) / 1000;
+        std::cout << "   FPGA cost time" << timedif << "us\n";
         // Color code the flow vectors on original image
 
+
+        clock_gettime(CLOCK_MONOTONIC, &tpstart);
         Vec3ucpt color_px;
         for (int rc = 0; rc < im0.rows; rc++)
         {
@@ -716,14 +574,67 @@ void *thread_of(void *junk)
                 color_code_img.at<Vec3ucpt>(rc, cc) = color_px;
             }
         }
-
+        clock_gettime(CLOCK_MONOTONIC, &tpend);
+        timedif = MILLION * (tpend.tv_sec - tpstart.tv_sec) +
+                    (tpend.tv_nsec - tpstart.tv_nsec) / 1000;
+        std::cout << "pro-process cost time" << timedif << "us\n";
         // end color coding
 
         std::cout << "post-processing done for frame#" << global_cnt << "\n";
 
         // writer.write(color_code_img);
-        ///////////////////////////////////////NETWORK//////////////////////////////////
-        std::cout << " captured\n";
+
+        pthread_mutex_lock(&mutex_send);
+        image_created = 1;
+        color_code_img.copyTo(image_send);
+        pthread_cond_signal(&cond);
+        pthread_mutex_unlock(&mutex_send);
+
+
+      //  std::cout << "wrting to video file done for frame#" << global_cnt << "\n";
+
+        // releaseing mats and pointers created inside the main for loop
+
+        std::cout << "memory release done for frame#" << global_cnt << "\n";
+
+        im1.copyTo(im0);
+        im1.release();
+    }
+    std::cout << "Task done\n";
+    color_code_img.release();
+    im0.release();
+    image_last_rgb.release();
+    return 0;
+}
+
+void *thread_send(void *junk)
+{
+    struct timespec tpstart;
+    struct timespec tpend;
+    long timedif;
+
+    std::vector<unsigned char> inImage(BUF_SIZE);
+    char cok[1] = {0x55};
+    char cokstart[1] = {0};
+    long long j = 0;
+    int sizelen = 0;
+    int sizejpg = 0;
+    unsigned char msgImage[BUF_SIZE];
+    
+    while (processing>0)
+    {
+        
+        pthread_mutex_lock(&mutex_send);
+        while (!image_created)
+        {
+            pthread_cond_wait(&cond,&mutex_send);
+        }
+        image_created = 0;
+        
+        pthread_mutex_unlock(&mutex_send);
+        std::cout << " sender get data\n";
+
+        clock_gettime(CLOCK_MONOTONIC, &tpstart);
 
         /* get trigger from server's command */
         if (cok[0] == 0x55)
@@ -731,7 +642,7 @@ void *thread_of(void *junk)
             cok[0] = 0;
 
             /* encode frame to JPG data */
-            imencode(".jpg", color_code_img, inImage);
+            imencode(".jpg", image_send, inImage);
             std::cout << " imencoded\n";
 
             /* get length of jpg */
@@ -775,10 +686,10 @@ void *thread_of(void *junk)
                     vec.push_back(msgImage[i]);
                 }
 
-                usleep(1000);
+              //  usleep(1000);
                 /* send data to server */
                 j++;
-                std::cout << "sending frame # " << j << "img size=" << datalen << "bytes\n";
+                std::cout << "sending frame # " << j << " img size=" << datalen << "bytes\n";
 
                 unsigned long long tmp_offset = 0;
                 while (datalen)
@@ -801,26 +712,18 @@ void *thread_of(void *junk)
 
                 // sizejpg=send(mysocket,msgImage,datalen,0);
 
-                usleep(1000);
+            //    usleep(1000);
 
                 /* get response ack from server then can send the next frame*/
                 recvfrom(mysocket, cok, 1, 0, (struct sockaddr *)&addr, (socklen_t *)&addr_len);
                 // recv(mysocket,cok,1,0);
             }
         }
-        ///////////////////////////////////////NETWORK//////////////////////////////////
-        std::cout << "wrting to video file done for frame#" << global_cnt << "\n";
 
-        // releaseing mats and pointers created inside the main for loop
-
-        std::cout << "memory release done for frame#" << global_cnt << "\n";
-
-        im1.copyTo(im0);
-        im1.release();
+        clock_gettime(CLOCK_MONOTONIC, &tpend);
+        timedif = MILLION * (tpend.tv_sec - tpstart.tv_sec) +
+                    (tpend.tv_nsec - tpstart.tv_nsec) / 1000;
+        std::cout << "uploading cost time" << timedif << "us\n";
     }
-    std::cout << "Task done\n";
-    color_code_img.release();
-    im0.release();
-    image_last_rgb.release();
-    return 0;
+
 }
