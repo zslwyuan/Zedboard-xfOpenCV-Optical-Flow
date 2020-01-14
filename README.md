@@ -41,7 +41,7 @@ You can make them work through the following steps:
 
 2. source /tools/Xilinx/SDx/2019.1/settings64.sh
 3. make all -j4
-4. If you want to try the examples with video/webcam, you **HAVE TO** build the petalinux for video/webcam libraries and device drivers according [THE README.MD in the directory "petalinux"](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/petalinux) the note below. Then you can use the built SDSoC design for your purpose. For example, copy all the SD card files, the libraries and data (video/photos) into SD card. And boot the board.
+4. If you want to try the examples with video/webcam, you **HAVE TO** build the petalinux for video/webcam libraries and device drivers according [THE README.MD in the directory "petalinux"](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/petalinux) and the note below. Then you can use the built SDSoC design for your purpose. For example, copy all the SD card files, the libraries and data (video/photos) into SD card. And boot the board.
 5. the system can boot via a command "boot" in serial terminal (braudrate=115200). To login, the system account is "root" and the password is "root".
 ***
 
