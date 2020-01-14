@@ -21,10 +21,10 @@ This project is implemented based on SDSoC 2019.1 and Zedboard. For these open s
 
 Please note that four versions of optical flow implementation are provided: 
 
-1.[for the processing of two images](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_photoinput)
-2.[for video file](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_videoinput)
-3.[for webcam streaming input](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_camerainput)
-4.[for UDP Ethernet output with webcam streaming input](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_UDPoutput_camerainput) 
+1. [for the processing of two images](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_photoinput)
+2. [for video file](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_videoinput)
+3. [for webcam streaming input](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_camerainput)
+4. [for UDP Ethernet output with webcam streaming input](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/xfopencv-master/examples/lkdensepyrof_UDPoutput_camerainput) 
 
 You can make them work through the following steps:
 
