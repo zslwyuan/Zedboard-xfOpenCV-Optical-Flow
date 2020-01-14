@@ -11,6 +11,7 @@ Therefore, we compile the [OpenCV 2.4.9](https://github.com/zslwyuan/Zedboard-xf
 
 This project is implemented based on SDSoC 2019.1 and Zedboard. For these open source projects, we provide the version with clear and simple code running at 0.5-5FPS . We also implemented a commercial version, redesigned and properly scheduled for parallelisms, which can run at 23-24 FPS with streaming output via TCP and will be open to community later.
 
+If you have any problem, I am happy to help ^\_^.
 
 **INPUT:** <img src="https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/demo_photos/input.gif" data-canonical-src="https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/demo_photos/input.gif" width="200" /> **OUTPUT:** <img src="https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/demo_photos/output.gif" data-canonical-src="https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/blob/master/demo_photos/input.gif" width="200" />
 
