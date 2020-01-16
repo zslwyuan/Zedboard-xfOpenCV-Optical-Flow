@@ -9,7 +9,7 @@ Xilinx reVision provides many supports for high-end FPGA SoCs like ZCU102, while
 
 Therefore, we compile the [OpenCV 2.4.9](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/arm_opencv_249) and [other required libraries](https://github.com/zslwyuan/Zedboard-xfOpenCV-Optical-Flow/tree/master/arm_other_libs), e.g. ffmpeg, with aarch32 compiler, to support wider usage of Zedboard. Furthermore, we optimize the hardware design of dense optical flow providing in xfOpenCV and the software process to reduce the cost of resource and improve performance. Moreover, we adjust MakeFile for Zedboard.
 
-This project is implemented based on SDSoC 2019.1 and Zedboard. For these open source projects, we provide the version with clear and simple code running at 0.5-5FPS . We also implemented a commercial version, redesigned and properly scheduled for parallelisms, which can run at 23-24 FPS with streaming output via TCP and will be open to community later.
+This project is implemented based on SDSoC 2019.1 and Zedboard. For these open source projects, we provide the version with clear and simple code running at 0.5-5FPS. A close source version is also redesigned, properly scheduled and implemented for parallelisms, which can run at 23-24 FPS with streaming output via TCP and will be open to community later.
 
 If you have any problem, I am happy to help ^\_^.
 
